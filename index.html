@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <script>
-        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
                 .then(() => console.log("Service Worker Registered"))
@@ -52,6 +51,7 @@
             border-radius: 30px;
             overflow: hidden;
             box-shadow: var(--shadow);
+            position: relative;
         }
 
         .header {
@@ -81,7 +81,6 @@
             color: #eee;
         }
 
-        /* New Install Button Style */
         #installBtn {
             display: none;
             margin: 15px auto 0;
@@ -119,19 +118,42 @@
             color: var(--accent-gold);
         }
 
-        /* New Counter Styles */
-        .counter-display {
-            font-size: 48px;
-            font-weight: bold;
-            color: var(--primary-dark);
-            text-align: center;
-            margin: 10px 0;
+        /* Tasbih Circle UI */
+        .zikir-circle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
         }
 
-        .counter-btns {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 10px;
+        .zikir-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--primary-dark);
+            border: 8px solid var(--accent-gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+            user-select: none;
+        }
+
+        .zikir-circle:active {
+            transform: scale(0.92);
+        }
+
+        .reset-btn {
+            margin-top: 15px;
+            background: #666;
+            width: auto;
+            padding: 8px 20px;
+            font-size: 12px;
         }
 
         input {
@@ -173,10 +195,6 @@
             gap: 8px;
         }
 
-        button:active {
-            transform: scale(0.98);
-        }
-
         .status-badge {
             background: #fff9e6;
             border-left: 4px solid var(--accent-gold);
@@ -188,18 +206,25 @@
             display: none;
         }
 
-        .footer-btns {
-            text-align: center;
-            margin-top: 10px;
+        /* Toast Notification Styles */
+        .toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 14px;
+            z-index: 1000;
+            transition: bottom 0.4s;
+            box-shadow: var(--shadow);
+            white-space: nowrap;
         }
 
-        .clear-link {
-            color: #d32f2f;
-            background: none;
-            border: none;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: underline;
+        .toast.show {
+            bottom: 30px;
         }
 
         .footer-credit {
@@ -212,32 +237,23 @@
             padding-top: 15px;
         }
 
-        .footer-credit b {
-            color: var(--primary-dark);
-        }
-
-        /* Responsiveness for Mobile */
         @media (max-width: 360px) {
-            body {
-                padding: 10px;
-            }
-
             .header h1 {
                 font-size: 18px;
             }
 
-            .card {
-                padding: 15px;
-            }
-
-            .counter-display {
-                font-size: 36px;
+            .zikir-circle {
+                width: 110px;
+                height: 110px;
+                font-size: 30px;
             }
         }
     </style>
 </head>
 
 <body>
+
+    <div id="toast" class="toast">সেভ করা হয়েছে!</div>
 
     <div class="app-container">
         <div class="header">
@@ -252,11 +268,10 @@
         <div class="content">
             <div class="card">
                 <div class="card-title"><i class="fa-solid fa-fingerprint"></i> তসবিহ কাউন্টার</div>
-                <div class="counter-display" id="countNum">0</div>
-                <div class="counter-btns">
-                    <button onclick="addCount()"><i class="fa-solid fa-plus"></i> গণনা করুন</button>
-                    <button style="background:#666;" onclick="resetCount()"><i
-                            class="fa-solid fa-rotate-right"></i></button>
+                <div class="zikir-circle-container">
+                    <div class="zikir-circle" id="countNum" onclick="addCount()">0</div>
+                    <button class="reset-btn" onclick="resetCount()"><i class="fa-solid fa-rotate-right"></i>
+                        রিসেট</button>
                 </div>
             </div>
 
@@ -278,9 +293,10 @@
 
             <div id="statusBox" class="status-badge"></div>
 
-            <div class="footer-btns">
-                <button class="clear-link" onclick="resetAll()">
-                    <i class="fa-solid fa-trash-can"></i> সব মুছে ফেলুন
+            <div class="footer-btns" style="text-align:center;">
+                <button style="color:#d32f2f; background:none; text-decoration:underline; font-size:13px;"
+                    onclick="resetAll()">
+                    সব মুছে ফেলুন
                 </button>
             </div>
             <div class="footer-credit">
@@ -291,83 +307,53 @@
 
     <script>
         let dailyTimer, intervalTimer, deferredPrompt;
-
-        // Counter Logic
         let count = parseInt(localStorage.getItem('ist_count')) || 0;
         document.getElementById('countNum').innerText = count;
 
-        const installBtn = document.getElementById('installBtn');
-        const istighfarList = [
-            "আসতাগফিরুল্লাহিল আজীম ওয়া আতুবু ইলাইহি",
-            "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি",
-            "আসতাগফিরুল্লাহ রাব্বি ওয়া আতুবু ইলাইহি",
-            "লা ইলাহা ইল্লা আনতা সুবহানাকা ইন্নি কুনতু মিনাজ জালিমীন",
-            "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি ওয়া আসআলুহুত তাওবাহ ওয়াল মাগফিরাহ"
-        ];
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
 
-        // Install Button Logic - Vanishes if already installed
         window.addEventListener('beforeinstallprompt', (e) => {
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                return; // Do not show if app is already running in standalone mode
-            }
+            if (window.matchMedia('(display-mode: standalone)').matches) return;
             e.preventDefault();
             deferredPrompt = e;
-            installBtn.style.display = 'flex';
+            document.getElementById('installBtn').style.display = 'flex';
         });
 
-        installBtn.addEventListener('click', async () => {
+        document.getElementById('installBtn').addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') installBtn.style.display = 'none';
+                if (outcome === 'accepted') document.getElementById('installBtn').style.display = 'none';
                 deferredPrompt = null;
             }
-        });
-
-        // Hide button if installed during session
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
         });
 
         function addCount() {
             count++;
             document.getElementById('countNum').innerText = count;
             localStorage.setItem('ist_count', count);
-            if (window.navigator.vibrate) window.navigator.vibrate(50);
+            if (navigator.vibrate) navigator.vibrate(50);
         }
 
         function resetCount() {
-            if (confirm("কাউন্টার রিসেট করতে চান?")) {
-                count = 0;
-                document.getElementById('countNum').innerText = count;
-                localStorage.setItem('ist_count', 0);
-            }
-        }
-
-        async function requestNotificationPermission() {
-            if (!("Notification" in window)) return false;
-            if (Notification.permission === "granted") return true;
-            return await Notification.requestPermission() === "granted";
-        }
-
-        function getRandomIstighfar() {
-            return istighfarList[Math.floor(Math.random() * istighfarList.length)];
-        }
-
-        function notify(title, msg) {
-            if (Notification.permission !== "granted") return;
-            new Notification(title, { body: msg, icon: 'icon.png' });
-            if (document.getElementById('soundChk')?.checked) {
-                new Audio('https://www.soundjay.com/buttons/beep-07a.mp3').play().catch(() => { });
-            }
+            count = 0;
+            document.getElementById('countNum').innerText = 0;
+            localStorage.setItem('ist_count', 0);
+            showToast("কাউন্টার রিসেট হয়েছে");
         }
 
         function saveDaily() {
             const val = document.getElementById('timeInp').value;
-            if (!val) return alert("সময় নির্বাচন করুন");
+            if (!val) return showToast("সময় নির্বাচন করুন");
             localStorage.setItem('ist_daily', val);
             startDaily(val);
             updateUI();
+            showToast("প্রতিদিনের সময় সেভ হয়েছে");
         }
 
         function startDaily(time) {
@@ -385,10 +371,11 @@
 
         function saveInterval() {
             const val = parseInt(document.getElementById('minInp').value);
-            if (!val || val < 1) return alert("সঠিক মিনিট দিন");
+            if (!val || val < 1) return showToast("সঠিক মিনিট দিন");
             localStorage.setItem('ist_interval', val);
             startInterval(val);
             updateUI();
+            showToast("বিরতি সেভ হয়েছে");
         }
 
         function startInterval(min) {
@@ -398,35 +385,38 @@
             }, min * 60 * 1000);
         }
 
-        function initApp() {
-            const d = localStorage.getItem('ist_daily');
-            const i = localStorage.getItem('ist_interval');
-            if (d) startDaily(d);
-            if (i) startInterval(parseInt(i));
-            updateUI();
-        }
-
         function updateUI() {
             const d = localStorage.getItem('ist_daily');
             const i = localStorage.getItem('ist_interval');
             const box = document.getElementById('statusBox');
             if (!d && !i) { box.style.display = 'none'; return; }
             box.style.display = 'block';
-            let html = "<strong>সক্রিয় রিমাইন্ডার:</strong><br>";
-            if (d) html += `• প্রতিদিন ${d} টায়<br>`;
-            if (i) html += `• প্রতি ${i} মিনিট অন্তর`;
-            box.innerHTML = html;
+            box.innerHTML = `<strong>সক্রিয় রিমাইন্ডার:</strong><br>${d ? '• প্রতিদিন ' + d + ' টায়<br>' : ''}${i ? '• প্রতি ' + i + ' মিনিট অন্তর' : ''}`;
         }
 
         function resetAll() {
-            if (!confirm("সব রিমাইন্ডার মুছে ফেলতে চান?")) return;
             localStorage.clear();
             location.reload();
         }
 
+        const istighfarList = ["আসতাগফিরুল্লাহিল আজীম ওয়া আতুবু ইলাইহি", "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি", "আসতাগফিরুল্লাহ রাব্বি ওয়া আতুবু ইলাইহি", "লা ইলাহা ইল্লা আনতা সুবহানাকা ইন্নি কুনতু মিনাজ জালিমীন", "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি ওয়া আসআলুহুত তাওবাহ ওয়াল মাগফিরাহ"];
+        function getRandomIstighfar() { return istighfarList[Math.floor(Math.random() * istighfarList.length)]; }
+
+        function notify(title, msg) {
+            if (Notification.permission !== "granted") return;
+            new Notification(title, { body: msg, icon: 'icon.png' });
+            if (document.getElementById('soundChk')?.checked) {
+                new Audio('https://www.soundjay.com/buttons/beep-07a.mp3').play().catch(() => { });
+            }
+        }
+
         window.onload = async () => {
-            await requestNotificationPermission();
-            initApp();
+            if ("Notification" in window) await Notification.requestPermission();
+            const d = localStorage.getItem('ist_daily');
+            const i = localStorage.getItem('ist_interval');
+            if (d) startDaily(d);
+            if (i) startInterval(parseInt(i));
+            updateUI();
         };
     </script>
 </body>

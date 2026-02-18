@@ -1,8 +1,21 @@
-const CACHE_NAME = 'istegfar-v1';
-const assets = ['./', './index.html'];
+const CACHE_NAME = 'istegfar-v2';
+const assets = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {
+  self.skipWaiting();
   e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(assets)));
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.map(key => {
+        if (key !== CACHE_NAME) {
+          return caches.delete(key);
+        }
+      })
+    ))
+  );
 });
 
 self.addEventListener('fetch', e => {
