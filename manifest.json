@@ -1,0 +1,22 @@
+{
+  "name": "ইস্তেগফার রিমাইন্ডার",
+  "short_name": "ইস্তেগফার",
+  "description": "প্রতিদিনের ইস্তেগফার ও জিকির রিমাইন্ডার অ্যাপ",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#064420",
+  "theme_color": "#064420",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
