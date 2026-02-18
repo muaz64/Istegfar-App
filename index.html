@@ -42,7 +42,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
 
         .app-container {
@@ -57,39 +57,50 @@
         .header {
             background: var(--primary-dark);
             background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            padding: 40px 20px;
+            padding: 30px 20px;
             text-align: center;
             color: var(--accent-gold);
             border-bottom: 5px solid var(--accent-gold);
         }
 
         .header i {
-            font-size: 50px;
-            margin-bottom: 15px;
+            font-size: 45px;
+            margin-bottom: 10px;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
         .header h1 {
             margin: 0;
-            font-size: 26px;
+            font-size: 22px;
             letter-spacing: 1px;
         }
 
         .header p {
             margin: 8px 0 0;
-            font-size: 16px;
+            font-size: 15px;
             color: #eee;
         }
 
+        /* New Install Button Style */
+        #installBtn {
+            display: none;
+            margin: 15px auto 0;
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
         .content {
-            padding: 25px;
+            padding: 20px;
         }
 
         .card {
             background: white;
-            padding: 20px;
+            padding: 18px;
             border-radius: 20px;
-            margin-bottom: 18px;
+            margin-bottom: 15px;
             border: 1px solid #eee;
             transition: 0.3s;
         }
@@ -99,13 +110,28 @@
             align-items: center;
             font-weight: bold;
             color: var(--primary-dark);
-            margin-bottom: 15px;
-            font-size: 16px;
+            margin-bottom: 12px;
+            font-size: 15px;
         }
 
         .card-title i {
-            margin-right: 12px;
+            margin-right: 10px;
             color: var(--accent-gold);
+        }
+
+        /* New Counter Styles */
+        .counter-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-dark);
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .counter-btns {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
         }
 
         input {
@@ -117,10 +143,11 @@
             outline: none;
             text-align: center;
             background: #fafafa;
+            margin-bottom: 10px;
         }
 
         .checkbox-container {
-            margin: 15px 0;
+            margin: 10px 0 15px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -143,21 +170,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        button:hover {
-            background: var(--primary-dark);
+        button:active {
+            transform: scale(0.98);
         }
 
         .status-badge {
             background: #fff9e6;
             border-left: 4px solid var(--accent-gold);
-            padding: 15px;
+            padding: 12px;
             border-radius: 10px;
             color: #856404;
-            font-size: 14px;
-            margin: 20px 0;
+            font-size: 13px;
+            margin: 15px 0;
             display: none;
         }
 
@@ -170,16 +197,16 @@
             color: #d32f2f;
             background: none;
             border: none;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             text-decoration: underline;
         }
 
         .footer-credit {
-            margin-top: 25px;
-            padding-bottom: 10px;
+            margin-top: 20px;
+            padding-bottom: 5px;
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             color: #7f8c8d;
             border-top: 1px solid #eee;
             padding-top: 15px;
@@ -189,17 +216,22 @@
             color: var(--primary-dark);
         }
 
-        @keyframes heartbeat {
-            0% {
-                transform: scale(1);
+        /* Responsiveness for Mobile */
+        @media (max-width: 360px) {
+            body {
+                padding: 10px;
             }
 
-            50% {
-                transform: scale(1.2);
+            .header h1 {
+                font-size: 18px;
             }
 
-            100% {
-                transform: scale(1);
+            .card {
+                padding: 15px;
+            }
+
+            .counter-display {
+                font-size: 36px;
             }
         }
     </style>
@@ -214,11 +246,22 @@
             <i class="fa-solid fa-mosque"></i>
             <h2>ইস্তেগফার রিমাইন্ডার</h2>
             <p>আসতাগফিরুল্লাহিল আজিম</p>
+            <button id="installBtn"><i class="fa-solid fa-download"></i> অ্যাপটি সেভ করুন</button>
         </div>
 
         <div class="content">
             <div class="card">
-                <div class="card-title"><i class="fa-solid fa-clock"></i> প্রতিদিন নির্দিষ্ট সময়</div>
+                <div class="card-title"><i class="fa-solid fa-fingerprint"></i> তসবিহ কাউন্টার</div>
+                <div class="counter-display" id="countNum">0</div>
+                <div class="counter-btns">
+                    <button onclick="addCount()"><i class="fa-solid fa-plus"></i> গণনা করুন</button>
+                    <button style="background:#666;" onclick="resetCount()"><i
+                            class="fa-solid fa-rotate-right"></i></button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-clock"></i> প্রতিদিন নির্দিষ্ট সময়</div>
                 <input type="time" id="timeInp">
                 <button onclick="saveDaily()"><i class="fa-solid fa-bell"></i> সেট করুন</button>
             </div>
@@ -228,7 +271,7 @@
                 <input type="number" id="minInp" placeholder="যেমন: ৩০" min="1">
                 <div class="checkbox-container">
                     <input type="checkbox" id="soundChk" checked>
-                    <label for="soundChk">নোটিফিকেশনে সাউন্ড বাজবে</label>
+                    <label for="soundChk">সাউন্ড বাজবে</label>
                 </div>
                 <button onclick="saveInterval()"><i class="fa-solid fa-repeat"></i> বিরতি সেট করুন</button>
             </div>
@@ -241,13 +284,19 @@
                 </button>
             </div>
             <div class="footer-credit">
-            <p>Developed  by <b>Muaz</b></p>
-        </div>
+                <p>Developed by <b>Muaz</b> & <b>Rasel</b></p>
+            </div>
         </div>
     </div>
 
     <script>
-        let dailyTimer, intervalTimer;
+        let dailyTimer, intervalTimer, deferredPrompt;
+
+        // Counter Logic
+        let count = parseInt(localStorage.getItem('ist_count')) || 0;
+        document.getElementById('countNum').innerText = count;
+
+        const installBtn = document.getElementById('installBtn');
         const istighfarList = [
             "আসতাগফিরুল্লাহিল আজীম ওয়া আতুবু ইলাইহি",
             "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি",
@@ -256,11 +305,49 @@
             "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি ওয়া আসআলুহুত তাওবাহ ওয়াল মাগফিরাহ"
         ];
 
+        // Install Button Logic - Vanishes if already installed
+        window.addEventListener('beforeinstallprompt', (e) => {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                return; // Do not show if app is already running in standalone mode
+            }
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            }
+        });
+
+        // Hide button if installed during session
+        window.addEventListener('appinstalled', () => {
+            installBtn.style.display = 'none';
+        });
+
+        function addCount() {
+            count++;
+            document.getElementById('countNum').innerText = count;
+            localStorage.setItem('ist_count', count);
+            if (window.navigator.vibrate) window.navigator.vibrate(50);
+        }
+
+        function resetCount() {
+            if (confirm("কাউন্টার রিসেট করতে চান?")) {
+                count = 0;
+                document.getElementById('countNum').innerText = count;
+                localStorage.setItem('ist_count', 0);
+            }
+        }
+
         async function requestNotificationPermission() {
             if (!("Notification" in window)) return false;
             if (Notification.permission === "granted") return true;
-            const permission = await Notification.requestPermission();
-            return permission === "granted";
+            return await Notification.requestPermission() === "granted";
         }
 
         function getRandomIstighfar() {
@@ -269,21 +356,15 @@
 
         function notify(title, msg) {
             if (Notification.permission !== "granted") return;
-
-            new Notification(title, {
-                body: msg,
-                icon: 'icon.png'
-            });
-
-            const soundOn = document.getElementById('soundChk')?.checked;
-            if (soundOn) {
+            new Notification(title, { body: msg, icon: 'icon.png' });
+            if (document.getElementById('soundChk')?.checked) {
                 new Audio('https://www.soundjay.com/buttons/beep-07a.mp3').play().catch(() => { });
             }
         }
 
         function saveDaily() {
             const val = document.getElementById('timeInp').value;
-            if (!val) return alert("সময় নির্বাচন করুন");
+            if (!val) return alert("সময় নির্বাচন করুন");
             localStorage.setItem('ist_daily', val);
             startDaily(val);
             updateUI();
@@ -296,9 +377,8 @@
             let target = new Date();
             target.setHours(h, m, 0, 0);
             if (target <= now) target.setDate(target.getDate() + 1);
-
             dailyTimer = setTimeout(() => {
-                notify("ইস্তেগফার সময়", getRandomIstighfar());
+                notify("ইস্তেগফার সময়", getRandomIstighfar());
                 startDaily(time);
             }, target - now);
         }
@@ -307,18 +387,15 @@
             const val = parseInt(document.getElementById('minInp').value);
             if (!val || val < 1) return alert("সঠিক মিনিট দিন");
             localStorage.setItem('ist_interval', val);
-            localStorage.setItem('ist_interval_last', Date.now().toString());
             startInterval(val);
             updateUI();
         }
 
         function startInterval(min) {
-            if (intervalTimer) clearTimeout(intervalTimer);
-
-            const delayMs = min * 60 * 1000;
+            if (intervalTimer) clearInterval(intervalTimer);
             intervalTimer = setInterval(() => {
                 notify("জিকির রিমাইন্ডার", getRandomIstighfar());
-            }, delayMs);
+            }, min * 60 * 1000);
         }
 
         function initApp() {
@@ -333,15 +410,10 @@
             const d = localStorage.getItem('ist_daily');
             const i = localStorage.getItem('ist_interval');
             const box = document.getElementById('statusBox');
-
-            if (!d && !i) {
-                box.style.display = 'none';
-                return;
-            }
-
+            if (!d && !i) { box.style.display = 'none'; return; }
             box.style.display = 'block';
-            let html = "<strong>সক্রিয় রিমাইন্ডার:</strong><br>";
-            if (d) html += `• প্রতিদিন ${d} টায়<br>`;
+            let html = "<strong>সক্রিয় রিমাইন্ডার:</strong><br>";
+            if (d) html += `• প্রতিদিন ${d} টায়<br>`;
             if (i) html += `• প্রতি ${i} মিনিট অন্তর`;
             box.innerHTML = html;
         }
@@ -349,10 +421,7 @@
         function resetAll() {
             if (!confirm("সব রিমাইন্ডার মুছে ফেলতে চান?")) return;
             localStorage.clear();
-            clearTimeout(dailyTimer);
-            clearInterval(intervalTimer);
-            updateUI();
-            alert("সব সেটিংস ক্লিয়ার করা হয়েছে।");
+            location.reload();
         }
 
         window.onload = async () => {
