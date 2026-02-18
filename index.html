@@ -671,9 +671,10 @@
             };
             if ('serviceWorker' in navigator) {
                 const reg = await navigator.serviceWorker.ready;
-                reg.showNotification(title, options);
+                // This ensures local reminders also show the professional name
+                reg.showNotification("ইস্তেগফার রিমাইন্ডার", options);
             } else {
-                new Notification(title, options);
+                new Notification("ইস্তেগফার রিমাইন্ডার", options);
             }
             if (document.getElementById('soundChk')?.checked) {
                 new Audio('https://www.soundjay.com/buttons/beep-07a.mp3').play().catch(() => { });

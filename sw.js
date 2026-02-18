@@ -17,11 +17,16 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   const options = {
-    body: payload.notification.body,
-    icon: './icon.png',
-    badge: './icon.png',
+    body: payload.notification.body || payload.data.body,
+    icon: 'icon.png',
+    badge: 'icon.png',
+    vibrate: [200, 100, 200],
+    data: {
+      url: '/'
+    }
   };
-  self.registration.showNotification(payload.notification.title, options);
+  // Hard-coding the name here removes the muaz64 site name from the top
+  self.registration.showNotification("ইস্তেগফার রিমাইন্ডার", options);
 });
 
 self.addEventListener('install', e => {
