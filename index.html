@@ -12,18 +12,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <script>
-        // Professional Service Worker Registration with Auto-Update
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
                     reg.onupdatefound = () => {
                         const installingWorker = reg.installing;
                         installingWorker.onstatechange = () => {
-                            if (installingWorker.state === 'installed') {
-                                if (navigator.serviceWorker.controller) {
-                                    // New content is available; force refresh
-                                    window.location.reload();
-                                }
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                window.location.reload();
                             }
                         };
                     };
@@ -70,38 +66,129 @@
         .header {
             background: var(--primary-dark);
             background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            padding: 30px 20px;
+            padding: 25px 20px;
             text-align: center;
             color: var(--accent-gold);
             border-bottom: 5px solid var(--accent-gold);
         }
 
         .header i {
-            font-size: 45px;
+            font-size: 40px;
             margin-bottom: 10px;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
         .header h1 {
             margin: 0;
-            font-size: 22px;
+            font-size: 20px;
             letter-spacing: 1px;
         }
 
         .header p {
             margin: 8px 0 0;
-            font-size: 15px;
+            font-size: 16px;
             color: #eee;
+            font-weight: 500;
+            min-height: 1.5em;
+        }
+
+        .date-display {
+            background: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--primary-dark);
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+        }
+
+        .prayer-dashboard {
+            background: #fff9e6;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .prayer-item {
+            text-align: center;
+            font-size: 13px;
+            color: var(--primary-dark);
+        }
+
+        .prayer-item b {
+            display: block;
+            font-size: 15px;
+            color: var(--primary-light);
+        }
+
+        .dropdown-section {
+            background: #fdfae6;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .dropdown-header {
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--primary-dark);
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            padding: 0 15px;
+        }
+
+        .dropdown-content.show {
+            max-height: 200px;
+            padding-bottom: 10px;
+        }
+
+        .full-prayer-item {
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 11px;
+            border: 1px solid #eee;
+        }
+
+        .full-prayer-item span {
+            display: block;
+            font-weight: bold;
+            color: var(--primary-light);
+        }
+
+        .countdown-bar {
+            background: var(--primary-light);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            font-weight: bold;
         }
 
         #installBtn {
             display: none;
-            margin: 15px auto 0;
+            margin: 10px auto;
             background: var(--accent-gold);
             color: var(--primary-dark);
             width: auto;
             padding: 8px 16px;
-            font-size: 14px;
+            font-size: 13px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
         }
 
         .content {
@@ -114,7 +201,6 @@
             border-radius: 20px;
             margin-bottom: 15px;
             border: 1px solid #eee;
-            transition: 0.3s;
         }
 
         .card-title {
@@ -131,12 +217,11 @@
             color: var(--accent-gold);
         }
 
-        /* Tasbih Circle UI */
         .zikir-circle-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px 0;
+            padding: 5px 0;
         }
 
         .zikir-circle {
@@ -165,8 +250,12 @@
             margin-top: 15px;
             background: #666;
             width: auto;
-            padding: 8px 20px;
+            padding: 6px 15px;
             font-size: 12px;
+            border-radius: 10px;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
 
         input {
@@ -201,11 +290,15 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
+            transition: 0.3s;
+        }
+
+        button:active {
+            transform: scale(0.98);
         }
 
         .status-badge {
@@ -219,7 +312,6 @@
             display: none;
         }
 
-        /* Toast Notification Styles */
         .toast {
             position: fixed;
             bottom: -100px;
@@ -230,7 +322,7 @@
             padding: 12px 25px;
             border-radius: 50px;
             font-size: 14px;
-            z-index: 1000;
+            z-index: 2000;
             transition: bottom 0.4s;
             box-shadow: var(--shadow);
             white-space: nowrap;
@@ -242,7 +334,6 @@
 
         .footer-credit {
             margin-top: 20px;
-            padding-bottom: 5px;
             text-align: center;
             font-size: 12px;
             color: #7f8c8d;
@@ -252,21 +343,24 @@
 
         @media (max-width: 360px) {
             .header h1 {
-                font-size: 18px;
+                font-size: 17px;
             }
 
             .zikir-circle {
-                width: 110px;
-                height: 110px;
-                font-size: 30px;
+                width: 115px;
+                height: 115px;
+                font-size: 32px;
+            }
+
+            .full-prayer-item {
+                font-size: 10px;
             }
         }
     </style>
 </head>
 
 <body>
-
-    <div id="toast" class="toast">সেভ করা হয়েছে!</div>
+    <div id="toast" class="toast">লোড হচ্ছে...</div>
 
     <div class="app-container">
         <div class="header">
@@ -274,9 +368,32 @@
             <br>
             <i class="fa-solid fa-mosque"></i>
             <h2>ইস্তেগফার রিমাইন্ডার</h2>
-            <p>আসতাগফিরুল্লাহিল আজিম</p>
+            <p id="displayZikr">আসতাগফিরুল্লাহিল আজিম</p>
             <button id="installBtn"><i class="fa-solid fa-download"></i> অ্যাপটি সেভ করুন</button>
         </div>
+
+        <div id="dateSection" class="date-display">লোড হচ্ছে...</div>
+
+        <div class="prayer-dashboard">
+            <div class="prayer-item">সেহরি শেষ<b id="sehriDash">--:--</b></div>
+            <div class="prayer-item">ইফতার<b id="iftarDash">--:--</b></div>
+        </div>
+
+        <div class="dropdown-section">
+            <div class="dropdown-header" onclick="togglePrayerTimes()">
+                <span>নামাজের সময়সূচী (চট্টগ্রাম)</span>
+                <i class="fa-solid fa-chevron-down" id="dropIcon"></i>
+            </div>
+            <div class="dropdown-content" id="prayerContent">
+                <div class="full-prayer-item">ফজর <span id="fajrTime">--:--</span></div>
+                <div class="full-prayer-item">জোহর <span id="zuhrTime">--:--</span></div>
+                <div class="full-prayer-item">আসর <span id="asrTime">--:--</span></div>
+                <div class="full-prayer-item">মাগরিব <span id="maghribTime">--:--</span></div>
+                <div class="full-prayer-item">ইশা <span id="ishaTime">--:--</span></div>
+            </div>
+        </div>
+
+        <div class="countdown-bar" id="countdownText">লোড হচ্ছে...</div>
 
         <div class="content">
             <div class="card">
@@ -307,7 +424,8 @@
             <div id="statusBox" class="status-badge"></div>
 
             <div class="footer-btns" style="text-align:center;">
-                <button style="color:#d32f2f; background:none; text-decoration:underline; font-size:13px;"
+                <button
+                    style="color:#d32f2f; background:none; text-decoration:underline; font-size:13px; border:none; cursor:pointer;"
                     onclick="resetAll()">
                     সব মুছে ফেলুন
                 </button>
@@ -323,11 +441,34 @@
         let count = parseInt(localStorage.getItem('ist_count')) || 0;
         document.getElementById('countNum').innerText = count;
 
+        const istighfarList = [
+            "আসতাগফিরুল্লাহিল আজীম ওয়া আতুবু ইলাইহি",
+            "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি",
+            "আসতাগফিরুল্লাহ রাব্বি ওয়া আতুবু ইলাইহি",
+            "লা ইলাহা ইল্লা আনতা সুবহানাকা ইন্নি কুনতু মিনাজ জালিমীন",
+            "আসতাগফিরুল্লাহিল আজিম"
+        ];
+
+        function format12Hour(h, m) {
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const hours = h % 12 || 12;
+            const minutes = String(m).padStart(2, '0');
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function togglePrayerTimes() {
+            const content = document.getElementById('prayerContent');
+            const icon = document.getElementById('dropIcon');
+            content.classList.toggle('show');
+            icon.classList.toggle('fa-chevron-up');
+            icon.classList.toggle('fa-chevron-down');
         }
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -350,19 +491,84 @@
             count++;
             document.getElementById('countNum').innerText = count;
             localStorage.setItem('ist_count', count);
-            if (navigator.vibrate) navigator.vibrate(50);
+            document.getElementById('displayZikr').innerText = istighfarList[count % istighfarList.length];
+            if (navigator.vibrate) {
+                if (count % 100 === 0) navigator.vibrate([200, 100, 200]);
+                else if (count % 33 === 0) navigator.vibrate([150, 50, 150]);
+                else navigator.vibrate(50);
+            }
         }
 
         function resetCount() {
             count = 0;
             document.getElementById('countNum').innerText = 0;
             localStorage.setItem('ist_count', 0);
+            document.getElementById('displayZikr').innerText = istighfarList[0];
             showToast("কাউন্টার রিসেট হয়েছে");
+        }
+
+        function updateDates() {
+            const now = new Date();
+            const engDate = now.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            // Manual Bangladeshi Hijri Adjustment
+            // Feb 19, 2026 is confirmed as 1st Ramadan 1447 in BD
+            const hijriDay = new Intl.NumberFormat('bn-BD').format(1);
+            const hijriMonth = "রমজান";
+            const hijriYear = new Intl.NumberFormat('bn-BD', { useGrouping: false }).format(1447);
+
+            document.getElementById('dateSection').innerText = `${engDate} | ${hijriDay} ${hijriMonth}, ${hijriYear} হিজরি`;
+        }
+
+        function getChattogramTimes() {
+            const prayerTimes = [
+                { id: 'fajrTime', name: 'ফজর', h: 5, m: 10 },
+                { id: 'zuhrTime', name: 'জোহর', h: 12, m: 8 },
+                { id: 'asrTime', name: 'আসর', h: 15, m: 24 },
+                { id: 'maghribTime', name: 'মাগরিব', h: 17, m: 50 },
+                { id: 'ishaTime', name: 'ইশা', h: 19, m: 5 }
+            ];
+            const sehriTime = { h: 5, m: 5 };
+            const iftarTime = { h: 17, m: 50 };
+
+            document.getElementById('sehriDash').innerText = format12Hour(sehriTime.h, sehriTime.m);
+            document.getElementById('iftarDash').innerText = format12Hour(iftarTime.h, iftarTime.m);
+
+            prayerTimes.forEach(p => {
+                document.getElementById(p.id).innerText = format12Hour(p.h, p.m);
+            });
+
+            const now = new Date();
+            let nextEvent = null;
+            let minDiff = Infinity;
+            const events = [...prayerTimes, { name: 'সেহরি শেষ', h: sehriTime.h, m: sehriTime.m }, { name: 'ইফতার', h: iftarTime.h, m: iftarTime.m }];
+
+            events.forEach(ev => {
+                let evDate = new Date();
+                evDate.setHours(ev.h, ev.m, 0, 0);
+                if (evDate < now) evDate.setDate(evDate.getDate() + 1);
+                let diff = evDate - now;
+                if (diff < minDiff) { minDiff = diff; nextEvent = { ...ev, date: evDate }; }
+            });
+            updateCountdown(nextEvent);
+        }
+
+        function updateCountdown(ev) {
+            if (window.cntInterval) clearInterval(window.cntInterval);
+            window.cntInterval = setInterval(() => {
+                const now = new Date();
+                const diff = ev.date - now;
+                if (diff <= 0) { clearInterval(window.cntInterval); getChattogramTimes(); return; }
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                document.getElementById('countdownText').innerText = `${ev.name} হতে বাকি: ${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }, 1000);
         }
 
         function saveDaily() {
             const val = document.getElementById('timeInp').value;
-            if (!val) return showToast("সময় নির্বাচন করুন");
+            if (!val) return showToast("সময় নির্বাচন করুন");
             localStorage.setItem('ist_daily', val);
             startDaily(val);
             updateUI();
@@ -377,7 +583,7 @@
             target.setHours(h, m, 0, 0);
             if (target <= now) target.setDate(target.getDate() + 1);
             dailyTimer = setTimeout(() => {
-                notify("ইস্তেগফার সময়", getRandomIstighfar());
+                notify("ইস্তেগফার সময়", istighfarList[Math.floor(Math.random() * istighfarList.length)]);
                 startDaily(time);
             }, target - now);
         }
@@ -394,7 +600,7 @@
         function startInterval(min) {
             if (intervalTimer) clearInterval(intervalTimer);
             intervalTimer = setInterval(() => {
-                notify("জিকির রিমাইন্ডার", getRandomIstighfar());
+                notify("জিকির রিমাইন্ডার", istighfarList[Math.floor(Math.random() * istighfarList.length)]);
             }, min * 60 * 1000);
         }
 
@@ -404,20 +610,35 @@
             const box = document.getElementById('statusBox');
             if (!d && !i) { box.style.display = 'none'; return; }
             box.style.display = 'block';
-            box.innerHTML = `<strong>সক্রিয় রিমাইন্ডার:</strong><br>${d ? '• প্রতিদিন ' + d + ' টায়<br>' : ''}${i ? '• প্রতি ' + i + ' মিনিট অন্তর' : ''}`;
+            let formattedDaily = "";
+            if (d) {
+                const [h, m] = d.split(':').map(Number);
+                formattedDaily = format12Hour(h, m);
+            }
+            box.innerHTML = `<strong>সক্রিয় রিমাইন্ডার:</strong><br>${d ? '• প্রতিদিন ' + formattedDaily + ' টায়<br>' : ''}${i ? '• প্রতি ' + i + ' মিনিট অন্তর' : ''}`;
         }
 
         function resetAll() {
-            localStorage.clear();
-            location.reload();
+            if (confirm("সব রিমাইন্ডার মুছে ফেলতে চান?")) {
+                localStorage.clear();
+                showToast("সব সেটিংস রিসেট করা হয়েছে");
+                setTimeout(() => location.reload(), 1500);
+            }
         }
 
-        const istighfarList = ["আসতাগফিরুল্লাহিল আজীম ওয়া আতুবু ইলাইহি", "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি", "আসতাগফিরুল্লাহ রাব্বি ওয়া আতুবু ইলাইহি", "লা ইলাহা ইল্লা আনতা সুবহানাকা ইন্নি কুনতু মিনাজ জালিমীন", "আসতাগফিরুল্লাহ ওয়া আতুবু ইলাইহি ওয়া আসআলুহুত তাওবাহ ওয়াল মাগফিরাহ"];
-        function getRandomIstighfar() { return istighfarList[Math.floor(Math.random() * istighfarList.length)]; }
-
-        function notify(title, msg) {
+        async function notify(title, msg) {
             if (Notification.permission !== "granted") return;
-            new Notification(title, { body: msg, icon: 'icon.png' });
+            if ('serviceWorker' in navigator) {
+                const reg = await navigator.serviceWorker.ready;
+                reg.showNotification(title, {
+                    body: msg,
+                    icon: 'icon.png',
+                    badge: 'icon.png',
+                    vibrate: [200, 100, 200]
+                });
+            } else {
+                new Notification(title, { body: msg, icon: 'icon.png' });
+            }
             if (document.getElementById('soundChk')?.checked) {
                 new Audio('https://www.soundjay.com/buttons/beep-07a.mp3').play().catch(() => { });
             }
@@ -430,6 +651,8 @@
             if (d) startDaily(d);
             if (i) startInterval(parseInt(i));
             updateUI();
+            updateDates();
+            getChattogramTimes();
         };
     </script>
 </body>

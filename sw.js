@@ -1,4 +1,4 @@
-const CACHE_NAME = 'istegfar-v2';
+const CACHE_NAME = 'istegfar-v6';
 const assets = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {
