@@ -6,7 +6,6 @@
   "display": "standalone",
   "background_color": "#064420",
   "theme_color": "#064420",
-  "description": "একটি আধ্যাত্মিক রিমাইন্ডার অ্যাপ",
   "orientation": "portrait",
   "icons": [
     {

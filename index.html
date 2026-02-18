@@ -11,6 +11,9 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -437,6 +440,39 @@
     </div>
 
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDI8m_KnE0LZqDq7VNshwFRvsVLWyqtnhk",
+            authDomain: "istighfar-reminder.firebaseapp.com",
+            projectId: "istighfar-reminder",
+            storageBucket: "istighfar-reminder.firebasestorage.app",
+            messagingSenderId: "677440645870",
+            appId: "1:677440645870:web:4a80d72d3784f9445e61ff"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        async function initPush() {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    // Get the active registration of your sw.js
+                    const registration = await navigator.serviceWorker.ready;
+
+                    const token = await messaging.getToken({
+                        vapidKey: 'BPhgPTEP-rcN_YIrwjVOhL-t10rXbvBehx4WL_fB2nMp_4UwkrmuFRwAnOUndjQq1zZG7jWgV2TffzaQovFPjfw',
+                        serviceWorkerRegistration: registration // This stops the 404 error
+                    });
+
+                    if (token) {
+                        localStorage.setItem('fcm_token', token);
+                        console.log("Token:", token);
+                    }
+                }
+            } catch (err) {
+                console.error("Firebase Error:", err);
+            }
+        }
+
         let dailyTimer, intervalTimer, deferredPrompt;
         let count = parseInt(localStorage.getItem('ist_count')) || 0;
         document.getElementById('countNum').innerText = count;
@@ -504,15 +540,12 @@
             document.getElementById('countNum').innerText = 0;
             localStorage.setItem('ist_count', 0);
             document.getElementById('displayZikr').innerText = istighfarList[0];
-            showToast("কাউন্টার রিসেট হয়েছে");
+            showToast("কাউন্টার রিসেট হয়েছে");
         }
 
         function updateDates() {
             const now = new Date();
             const engDate = now.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
-
-            // Manual Bangladeshi Hijri Adjustment
-            // Feb 19, 2026 is confirmed as 1st Ramadan 1447 in BD
             const hijriDay = new Intl.NumberFormat('bn-BD').format(1);
             const hijriMonth = "রমজান";
             const hijriYear = new Intl.NumberFormat('bn-BD', { useGrouping: false }).format(1447);
@@ -568,11 +601,11 @@
 
         function saveDaily() {
             const val = document.getElementById('timeInp').value;
-            if (!val) return showToast("সময় নির্বাচন করুন");
+            if (!val) return showToast("সময় নির্বাচন করুন");
             localStorage.setItem('ist_daily', val);
             startDaily(val);
             updateUI();
-            showToast("প্রতিদিনের সময় সেভ হয়েছে");
+            showToast("প্রতিদিনের সময় সেভ হয়েছে");
         }
 
         function startDaily(time) {
@@ -583,7 +616,7 @@
             target.setHours(h, m, 0, 0);
             if (target <= now) target.setDate(target.getDate() + 1);
             dailyTimer = setTimeout(() => {
-                notify("ইস্তেগফার সময়", istighfarList[Math.floor(Math.random() * istighfarList.length)]);
+                notify("ইস্তেগফার সময়", istighfarList[Math.floor(Math.random() * istighfarList.length)]);
                 startDaily(time);
             }, target - now);
         }
@@ -594,7 +627,7 @@
             localStorage.setItem('ist_interval', val);
             startInterval(val);
             updateUI();
-            showToast("বিরতি সেভ হয়েছে");
+            showToast("বিরতি সেভ হয়েছে");
         }
 
         function startInterval(min) {
@@ -615,29 +648,32 @@
                 const [h, m] = d.split(':').map(Number);
                 formattedDaily = format12Hour(h, m);
             }
-            box.innerHTML = `<strong>সক্রিয় রিমাইন্ডার:</strong><br>${d ? '• প্রতিদিন ' + formattedDaily + ' টায়<br>' : ''}${i ? '• প্রতি ' + i + ' মিনিট অন্তর' : ''}`;
+            box.innerHTML = `<strong>সক্রিয় রিমাইন্ডার:</strong><br>${d ? '• প্রতিদিন ' + formattedDaily + ' টায়<br>' : ''}${i ? '• প্রতি ' + i + ' মিনিট অন্তর' : ''}`;
         }
 
         function resetAll() {
             if (confirm("সব রিমাইন্ডার মুছে ফেলতে চান?")) {
                 localStorage.clear();
-                showToast("সব সেটিংস রিসেট করা হয়েছে");
+                showToast("সব সেটিংস রিসেট করা হয়েছে");
                 setTimeout(() => location.reload(), 1500);
             }
         }
 
         async function notify(title, msg) {
             if (Notification.permission !== "granted") return;
+            const options = {
+                body: msg,
+                icon: 'icon.png',
+                badge: 'icon.png',
+                vibrate: [200, 100, 200],
+                tag: 'zikir-reminder',
+                renotify: true
+            };
             if ('serviceWorker' in navigator) {
                 const reg = await navigator.serviceWorker.ready;
-                reg.showNotification(title, {
-                    body: msg,
-                    icon: 'icon.png',
-                    badge: 'icon.png',
-                    vibrate: [200, 100, 200]
-                });
+                reg.showNotification(title, options);
             } else {
-                new Notification(title, { body: msg, icon: 'icon.png' });
+                new Notification(title, options);
             }
             if (document.getElementById('soundChk')?.checked) {
                 new Audio('https://www.soundjay.com/buttons/beep-07a.mp3').play().catch(() => { });
@@ -645,7 +681,7 @@
         }
 
         window.onload = async () => {
-            if ("Notification" in window) await Notification.requestPermission();
+            initPush();
             const d = localStorage.getItem('ist_daily');
             const i = localStorage.getItem('ist_interval');
             if (d) startDaily(d);
