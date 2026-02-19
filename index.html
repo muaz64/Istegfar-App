@@ -527,7 +527,7 @@
             count++;
             document.getElementById('countNum').innerText = count;
             localStorage.setItem('ist_count', count);
-            document.getElementById('displayZikr').innerText = istighfarList[count % istighfarList.length];
+            if(count % 33 === 0) document.getElementById('displayZikr').innerText = istighfarList[Math.floor(Math.random()*istighfarList.length)];
             if (navigator.vibrate) {
                 if (count % 100 === 0) navigator.vibrate([200, 100, 200]);
                 else if (count % 33 === 0) navigator.vibrate([150, 50, 150]);
